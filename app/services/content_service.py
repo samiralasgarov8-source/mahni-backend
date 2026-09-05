@@ -31,15 +31,20 @@ def _wikipedia_search_title(topic: str) -> str | None:
                 "namespace": 0,
                 "format": "json",
             },
+            headers={"User-Agent": "MahniStudiyasi/1.0 (auto-video-generator; contact: n/a)"},
             timeout=6,
         )
+        print(f"[content_service] opensearch status={resp.status_code} topic={topic!r}")
         if resp.status_code == 200:
             data = resp.json()
             titles = data[1] if len(data) > 1 else []
+            print(f"[content_service] opensearch titles={titles}")
             if titles:
                 return titles[0]
-    except (requests.RequestException, ValueError, IndexError):
-        pass
+        else:
+            print(f"[content_service] opensearch non-200 body={resp.text[:300]!r}")
+    except (requests.RequestException, ValueError, IndexError) as exc:
+        print(f"[content_service] opensearch EXCEPTION: {exc!r}")
     return None
 
 
@@ -47,14 +52,18 @@ def _wikipedia_summary(title: str) -> str | None:
     try:
         resp = requests.get(
             "https://az.wikipedia.org/api/rest_v1/page/summary/" + requests.utils.quote(title),
+            headers={"User-Agent": "MahniStudiyasi/1.0 (auto-video-generator; contact: n/a)"},
             timeout=6,
         )
+        print(f"[content_service] summary status={resp.status_code} title={title!r}")
         if resp.status_code == 200:
             extract = resp.json().get("extract")
             if extract:
                 return extract
-    except requests.RequestException:
-        pass
+        else:
+            print(f"[content_service] summary non-200 body={resp.text[:300]!r}")
+    except requests.RequestException as exc:
+        print(f"[content_service] summary EXCEPTION: {exc!r}")
     return None
 
 
@@ -63,6 +72,7 @@ def _gemini_summary(topic: str) -> str | None:
     haqqında qısa, Azərbaycan dilində məlumat mətni yaradır. GEMINI_API_KEY
     boşdursa, bu funksiya sadəcə None qaytarır (çağıran tərəf öz fallback-ini işlədir)."""
     if not settings.GEMINI_API_KEY:
+        print("[content_service] GEMINI_API_KEY boşdur, AI fallback atlanır")
         return None
     try:
         resp = requests.post(
@@ -81,6 +91,7 @@ def _gemini_summary(topic: str) -> str | None:
             },
             timeout=15,
         )
+        print(f"[content_service] gemini status={resp.status_code}")
         if resp.status_code == 200:
             data = resp.json()
             candidates = data.get("candidates") or []
@@ -89,8 +100,10 @@ def _gemini_summary(topic: str) -> str | None:
                 text = "".join(p.get("text", "") for p in parts).strip()
                 if text:
                     return text
-    except (requests.RequestException, ValueError, KeyError, IndexError):
-        pass
+        else:
+            print(f"[content_service] gemini non-200 body={resp.text[:300]!r}")
+    except (requests.RequestException, ValueError, KeyError, IndexError) as exc:
+        print(f"[content_service] gemini EXCEPTION: {exc!r}")
     return None
 
 
