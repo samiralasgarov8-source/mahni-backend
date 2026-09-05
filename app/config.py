@@ -43,6 +43,11 @@ class Settings(BaseSettings):
     # --- Tərcümə (SECTION 1) ---
     TRANSLATE_PROVIDER: str = "deep_translator"  # pulsuz, açar tələb etmir
 
+    # --- AI mətn fallback (SECTION 1) ---
+    # Pulsuz açar: https://aistudio.google.com/apikey — Wikipedia-da tapılmayan
+    # mövzular üçün istifadə olunur. Boş qalsa, sadəcə Wikipedia+fallback mesajı işləyir.
+    GEMINI_API_KEY: str = ""
+
     # --- Fayl saxlama ---
     MEDIA_ROOT: str = "./media"        # generasiya olunan video/audio buradadır
     PUBLIC_BASE_URL: str = "http://localhost:8000"  # media fayllarına tam URL üçün prefiks
