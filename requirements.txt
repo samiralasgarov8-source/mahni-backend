@@ -1,0 +1,20 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pydantic-settings==2.5.2
+sqlalchemy==2.0.35
+psycopg2-binary==2.9.9
+requests==2.32.3
+python-dotenv==1.0.1
+python-multipart==0.0.9
+
+# Tərcümə (SECTION 1)
+deep-translator==1.11.4
+
+# TTS (SECTION 3)
+gTTS==2.5.3
+
+# YouTube Data + Analytics API (SECTION 5/6)
+google-api-python-client==2.146.0
+google-auth-oauthlib==1.2.1
+google-auth-httplib2==0.2.0

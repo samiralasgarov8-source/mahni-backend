@@ -1,0 +1,45 @@
+# SECTION 7: Render.com "Blueprint" faylı.
+# Render Dashboard -> New -> Blueprint -> bu repo-nu seç -> Render avtomatik
+# həm web servisi, həm də Postgres DB-ni quracaq.
+#
+# QEYD: runtime "docker" seçilib (Python runtime yox), çünki SECTION 4-ün video
+# render funksiyası ffmpeg CLI-ni tələb edir və Render-in adi Python mühiti
+# onu əvvəlcədən quraşdırmır. Dockerfile bu qovluqdadır.
+services:
+  - type: web
+    name: auto-video-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: ALLOWED_ORIGINS
+        value: "*"           # Prodakşnda öz frontend domeninlə əvəz et
+      - key: DATABASE_URL
+        fromDatabase:
+          name: auto-video-db
+          property: connectionString
+      - key: PUBLIC_BASE_URL
+        sync: false          # Deploy sonrası Render-in verdiyi URL-i əl ilə yaz
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: PEXELS_API_KEY
+        sync: false
+      - key: ADSENSE_ACCOUNT_ID
+        sync: false
+      - key: TTS_PROVIDER
+        value: gtts
+
+databases:
+  - name: auto-video-db
+    plan: free
+    databaseName: autovideo
+    user: autovideo
